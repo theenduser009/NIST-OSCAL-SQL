@@ -1,0 +1,1 @@
+FACILITY_ID,SSP - Metadata,system-security-plan.metadata.locations[].props,Preserve the Facility ID on its SSP location,DEFERRED,direct,source-one,omit,N,FIELD,,,,,,,,facilities,,facility-id,Extension Property,urn:archer:source:v1,source-one:ssp:facility-id
