@@ -1,0 +1,14 @@
+{
+  "OSCAL_MODEL_KEY": "SSP",
+  "NODE_PATH": "system-security-plan.metadata.locations[]",
+  "ELEMENT_TYPE": "locations",
+  "PARENT_NODE_PATH": "system-security-plan.metadata",
+  "IS_COLLECTION": true,
+  "INSTANCE_KEY_RULE": "FACILITY_ID",
+  "PROCESS_ORDER": 15,
+  "IS_ACTIVE": true,
+  "ITEM_PATH": "$",
+  "OPERATOR": "joined-records",
+  "UUID_POLICY": "node",
+  "REQUIRED_MEMBERS": null
+}
