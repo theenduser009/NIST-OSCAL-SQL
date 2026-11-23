@@ -1,251 +1,1661 @@
--- Policy Level 3 source and saved target values. Snowflake DEV. Read-only.
--- Selects the lowest Content ID with a populated source value for each field.
--- For a documented worksheet alias, the source uses the exact key when present.
--- A null selector means the reviewed mapping has no verified saved target.
-WITH fields AS (
-    SELECT column1 AS seq, column2 AS field_name, column3::VARCHAR AS requested_id,
-           column4 AS mapped_field, column5 AS selector, column6 AS payload_key
-    FROM VALUES
-        (1, 'ABBREVIATION', NULL, NULL, 'group_prop', 'abbreviation'),
-        (2, 'ACTIVATED_PLANS_POLICIES', NULL, NULL, 'group_prop', 'activated-plans-policies'),
-        (3, 'ADMIN_POLICY_NAME', NULL, NULL, 'group_prop', 'admin-policy-name'),
-        (4, 'APPLICABILITY', NULL, NULL, 'group_prop', 'applicability'),
-        (5, 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONFIRMED_IN_ARCHER', NULL, NULL, 'group_prop', 'confirmed-date'),
-        (6, 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONTENT_ID', NULL, NULL, 'group_prop', 'archer-content-id'),
-        (7, 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_FIRST_PUBLISHED', NULL, NULL, 'metadata', 'published'),
-        (8, 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_LAST_UPDATED', NULL, NULL, 'metadata', 'last-modified'),
-        (9, 'AUTHORITATIVE_SOURCES', NULL, NULL, 'group_prop', 'authoritative-sources'),
-        (10, 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_AND_SUBSECTION_LEVELS', NULL, NULL, 'group_prop', 'authoritative-sources-policy-level-3-from-section-and-subsection-levels'),
-        (11, 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3__FROM_SECTION_AND_SUBSECTION_LEVELS', NULL, NULL, NULL, NULL),
-        (12, 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_LEVEL_AND_BELOW', NULL, NULL, 'group_prop', 'authoritative-sources-policy-level-3-from-section-level-and-below'),
-        (13, 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_TOPIC_SECTION_AND_SUBSECTION_LEVELS', NULL, NULL, 'group_prop', 'authoritative-sources-policy-level-3-from-topic-section-and-subsection-levels'),
-        (14, 'BUSINESS_CONTINUITY_PLANS', NULL, NULL, 'group_prop', 'business-continuity-plans'),
-        (15, 'CHECKSUM_VALUE', NULL, NULL, NULL, NULL),
-        (16, 'COMPLIANCE_ENGAGEMENTS_SCOPE_PROCEDURES_FROM_SELECTED_POLICY_TOPICS', NULL, NULL, 'group_prop', 'compliance-engagements-scope-procedures-from-selected-policy-topics'),
-        (17, 'CONTROL_PROCEDURES', NULL, NULL, 'procedures', 'description'),
-        (18, 'CONTROL_REQUIREMENTS_CONTROL_STANDARD_POLICY', NULL, NULL, NULL, NULL),
-        (19, 'CONTROL_REQUIREMENTS_FUNCTIONAL_CORPORATE_POLICIES', NULL, NULL, NULL, NULL),
-        (20, 'CONTROL_STANDARD_REQUIREMENTS', NULL, NULL, 'standards', NULL),
-        (21, 'CONTROL_STANDARD_TYPE_LEVEL_3', NULL, NULL, 'group_prop', 'control-standard-type-level-3'),
-        (22, 'CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3_FIELD_VALUE_MATCH', NULL, NULL, 'group_prop', 'control-standards-calculated-policy-level-3-field-value-match'),
-        (23, 'CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3__FIELD_VALUE_MATCH', NULL, NULL, NULL, NULL),
-        (24, 'CONTROL_TESTING_RESULTS_FAILED_POLICY_LEVEL_3', NULL, NULL, 'findings_prop', 'failed-test-result'),
-        (25, 'CONTROL_TESTING_RESULTS_POLICY', NULL, NULL, 'findings_prop', 'test-result'),
-        (26, 'COUNT_OF_OBJECTIVES', NULL, NULL, 'group_prop', 'objective-count'),
-        (27, 'COUNT_OF_OPEN_POAMS', NULL, NULL, 'results_prop', 'open-poam-count'),
-        (28, 'DEFAULT_RECORD_PERMISSIONS', NULL, NULL, 'group_prop', 'default-record-permissions'),
-        (29, 'DCMA_CONTROL_SCORE_AVERAGE_SUM', NULL, NULL, 'results_prop', 'dcma-control-score-average-sum'),
-        (30, 'DOCUMENT_REPOSITORY', NULL, NULL, NULL, NULL),
-        (31, 'EVIDENCE_REPOSITORY_POLICY_LEVEL_3', NULL, NULL, NULL, NULL),
-        (32, 'EVIDENCE_REPOSITORY_RELATED_POLICY_LEVEL_3', NULL, NULL, NULL, NULL),
-        (33, 'EXECUTIVE_OWNER', NULL, NULL, 'group_prop', 'executive-owner'),
-        (34, 'EXCEPTION_REQUESTS_POLICIES', NULL, NULL, NULL, NULL),
-        (35, 'FINDINGS', NULL, NULL, 'findings', 'title'),
-        (36, 'FINDINGS_POLICY_LEVEL_3', NULL, NULL, 'findings', 'title'),
-        (37, 'FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS_DO_NOT_USE2', NULL, NULL, NULL, NULL),
-        (38, 'FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS__DO_NOT_USE2', NULL, NULL, NULL, NULL),
-        (39, 'FINDINGS_POLICY__LEVEL_3', NULL, 'FINDINGS_POLICY_LEVEL_3', 'findings', 'title'),
-        (40, 'FINDINGS_POLICIES_CALCULATED_LEVEL_3', NULL, NULL, 'group_prop', 'findings-policies-calculated-level-3'),
-        (41, 'FINDINGS_POLICIES__CALCULATED_LEVEL_3', NULL, NULL, NULL, NULL),
-        (42, 'FCP_POLICY_LEVEL_1_NAME', NULL, NULL, 'group_prop', 'fcp-policy-level-1-name'),
-        (43, 'FCP_POLICY_LEVEL_2_NAME', NULL, NULL, 'group_prop', 'fcp-policy-level-2-name'),
-        (44, 'FCP_POLICY_LEVEL_3_NAME', NULL, NULL, 'group_prop', 'fcp-policy-level-3-name'),
-        (45, 'GLOSSARY', NULL, NULL, NULL, NULL),
-        (46, 'HELPER_POLICY_FEED', NULL, NULL, 'group_prop', 'helper-policy-feed'),
-        (47, 'INSERT_DATE', NULL, NULL, NULL, NULL),
-        (48, 'ISSUES_POLICIES', NULL, NULL, 'findings_prop', 'issue'),
-        (49, 'ISSUES_POLICIES1', NULL, NULL, NULL, NULL),
-        (50, 'LINKED_POLICY_CHANGED_DATE', NULL, NULL, 'group_prop', 'linked-policy-changed-date'),
-        (51, 'META_DATA', NULL, NULL, 'group_prop', 'meta-data'),
-        (52, 'NEW_AUTH_SOURCE_CALC_CROSSREF_SECTION', NULL, NULL, 'group_prop', 'new-auth-source-calc-crossref-section'),
-        (53, 'NEW_AUTH_SOURCE_CALC_CROSSREF_SUBSECTION', NULL, NULL, 'group_prop', 'new-auth-source-calc-crossref-subsection'),
-        (54, 'POLICIES_FCP_POLICY_LEVEL_3_NAME', NULL, NULL, 'group_prop', 'policies-fcp-policy-level-3-name'),
-        (55, 'POLICIES_POLICY__LEVEL_3', NULL, NULL, NULL, NULL),
-        (56, 'POLICIES_POLICY_TO_POLICY_CROSSREF', NULL, NULL, 'group_prop', 'policies-policy-to-policy-crossref'),
-        (57, 'POLICY_CHANGE_RECOMMENDATION_POLICIES', NULL, NULL, 'group_prop', 'policy-change-recommendation-policies'),
-        (58, 'POLICY_HIERARCHY_1_2_3', NULL, NULL, 'group_prop', 'policy-hierarchy-1-2-3'),
-        (59, 'POLICY_LEVEL_1_NAME', NULL, NULL, 'group_prop', 'policy-level-1-name'),
-        (60, 'POLICY_LEVEL_2_NAME', NULL, NULL, 'group_prop', 'policy-level-2-name'),
-        (61, 'POLICY_LEVEL_2_REFERENCE', NULL, NULL, 'group_prop', 'policy-level-2-reference'),
-        (62, 'POLICY_LEVEL_3_NAME', NULL, NULL, 'groups', 'title'),
-        (63, 'POLICY_LEVEL_3_OWNER', NULL, NULL, 'group_prop', 'policy-owner'),
-        (64, 'POLICY_LEVEL_3_STATEMENT', NULL, NULL, 'group_part', 'statement'),
-        (65, 'POLICY_LEVEL_3_TRACKING_ID', NULL, NULL, 'group_prop', 'tracking-id'),
-        (66, 'POLICY_NAME', NULL, NULL, 'group_prop', 'policy-name'),
-        (67, 'POLICY_NUMBER', NULL, NULL, 'groups', 'id'),
-        (68, 'POLICY_TOPIC_NAME', NULL, NULL, 'group_prop', 'policy-topic-name'),
-        (69, 'POLICY__LEVEL_1_NAME', NULL, 'POLICY_LEVEL_1_NAME', 'group_prop', 'policy-level-1-name'),
-        (70, 'POLICY__LEVEL_2_NAME', NULL, 'POLICY_LEVEL_2_NAME', 'group_prop', 'policy-level-2-name'),
-        (71, 'POLICY__LEVEL_2_REFERENCE', NULL, 'POLICY_LEVEL_2_REFERENCE', 'group_prop', 'policy-level-2-reference'),
-        (72, 'POLICY__LEVEL_3_NAME', NULL, 'POLICY_LEVEL_3_NAME', 'groups', 'title'),
-        (73, 'POLICY__LEVEL_3_OWNER', NULL, 'POLICY_LEVEL_3_OWNER', 'group_prop', 'policy-owner'),
-        (74, 'POLICY__LEVEL_3_STATEMENT', NULL, 'POLICY_LEVEL_3_STATEMENT', 'group_part', 'statement'),
-        (75, 'POLICY__LEVEL_3_TRACKING_ID', NULL, 'POLICY_LEVEL_3_TRACKING_ID', 'group_prop', 'tracking-id'),
-        (76, 'POLICIES_POLICY__LEVEL_3_POLICY_HIERARCHY_1_2_3', NULL, 'POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3', 'group_prop', 'policy-hierarchy-1-2-3'),
-        (77, 'POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3', NULL, NULL, 'group_prop', 'policy-hierarchy-1-2-3'),
-        (78, 'POLICIES_POLICY_LEVEL_3', NULL, NULL, 'group_prop', 'policies-policy-level-3'),
-        (79, 'PURPOSE', NULL, NULL, 'group_part_default_ns', 'overview'),
-        (80, 'QUESTION_LIBRARY', NULL, NULL, 'activities_prop', 'question-library'),
-        (81, 'REGULATORY_TESTING_SCOPE', NULL, NULL, 'group_prop', 'regulatory-testing-scope'),
-        (82, 'RETIRED_DATE', NULL, NULL, 'group_prop', 'retired-date'),
-        (83, 'SECTION_DATE_CREATED', NULL, NULL, 'group_prop', 'date-created'),
-        (84, 'SECTION_LAST_UPDATED', NULL, NULL, 'group_prop', 'last-updated'),
-        (85, 'SOX_CONTROL', NULL, NULL, 'group_prop', 'sox-control'),
-        (86, 'SOX_REFERENCE_ID', NULL, NULL, 'group_prop', 'sox-reference-id'),
-        (87, 'SORT_ORDER', NULL, NULL, 'group_prop', 'sort-order'),
-        (88, 'STATUS', NULL, NULL, 'group_prop', 'status'),
-        (89, 'UPDATE_DATE', NULL, NULL, NULL, NULL)
-),
-layouts AS (
-    SELECT column1 AS selector, column2 AS model, column3 AS node_type, column4 AS parent_type,
-           column5 AS mode, column6 AS member_name, column7 AS namespace
-    FROM VALUES
-        ('group_prop', 'CATALOG', 'props', 'groups', 'property', 'value', 'urn:archer:source:v1'),
-        ('metadata', 'CATALOG', 'metadata', 'catalog', 'member', NULL, NULL),
-        ('procedures', 'COMPONENT_DEFINITION', 'implemented-requirements', 'control-implementations', 'procedures', 'description', NULL),
-        ('findings_prop', 'ASSESSMENT_RESULTS', 'props', 'findings', 'property', 'value', 'urn:archer:source:v1'),
-        ('results_prop', 'ASSESSMENT_RESULTS', 'props', 'results', 'property', 'value', 'urn:archer:source:v1'),
-        ('findings', 'ASSESSMENT_RESULTS', 'findings', 'results', 'findings', 'title', NULL),
-        ('groups', 'CATALOG', 'groups', 'catalog', 'member', NULL, NULL),
-        ('group_part', 'CATALOG', 'parts', 'groups', 'property', 'prose', 'urn:archer:source:v1'),
-        ('group_part_default_ns', 'CATALOG', 'parts', 'groups', 'property', 'prose', NULL),
-        ('activities_prop', 'SECURITY_ASSESSMENT_PLAN', 'props', 'activities', 'property', 'value', 'urn:archer:source:v1')
-),
-raw_rows AS (
-    SELECT CONTENT_ID::VARCHAR AS content_id, TRY_PARSE_JSON(CURATED_JSON::VARCHAR) AS doc
-    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW WHERE CONTENT_ID IS NOT NULL
-),
-source_rows AS (
-    SELECT f.*, COALESCE(r.content_id, f.requested_id) AS content_id,
-           COALESCE(GET(AS_OBJECT(r.doc), f.field_name), GET(AS_OBJECT(r.doc), f.mapped_field)) AS source_value,
-           GET(AS_OBJECT(r.doc), COALESCE(f.mapped_field, f.field_name)) AS mapped_source_value
-    FROM fields f LEFT JOIN raw_rows r ON f.requested_id IS NULL OR r.content_id = f.requested_id
-),
-picked AS (
-    SELECT * FROM source_rows
-    QUALIFY requested_id IS NOT NULL OR ROW_NUMBER() OVER (
-        PARTITION BY seq ORDER BY
-        CASE WHEN source_value IS NULL OR IS_NULL_VALUE(source_value)
-               OR NULLIF(TRIM(AS_VARCHAR(source_value)), '') = ''
-               OR ARRAY_SIZE(AS_ARRAY(source_value)) = 0 THEN 1 ELSE 0 END,
-        TRY_TO_NUMBER(content_id), content_id
-    ) = 1
-),
-nodes AS (
-    SELECT 'CATALOG' AS model, SOURCE_RECORD_ID AS content_id,
-           PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AS node_key, ELEMENT_TYPE AS kind, METADATA_JSON AS doc
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT
-    WHERE SOURCE_SYSTEM_NAME = 'ARCHER' AND SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
-      AND SOURCE_RECORD_ID IN (SELECT content_id FROM picked)
-    UNION ALL
-    SELECT 'SECURITY_ASSESSMENT_PLAN' AS model, SOURCE_RECORD_ID AS content_id,
-           PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH AS node_key, ELEMENT_TYPE AS kind, METADATA_JSON AS doc
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT
-    WHERE SOURCE_SYSTEM_NAME = 'ARCHER' AND SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
-      AND SOURCE_RECORD_ID IN (SELECT content_id FROM picked)
-    UNION ALL
-    SELECT 'ASSESSMENT_RESULTS' AS model, SOURCE_RECORD_ID AS content_id,
-           PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AS node_key, ELEMENT_TYPE AS kind, METADATA_JSON AS doc
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT
-    WHERE SOURCE_SYSTEM_NAME = 'ARCHER' AND SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
-      AND SOURCE_RECORD_ID IN (SELECT content_id FROM picked)
-    UNION ALL
-    SELECT 'COMPONENT_DEFINITION' AS model, SOURCE_RECORD_ID AS content_id,
-           PK_DIM_OSCAL_COMPONENT_ELEMENT_HASH AS node_key, ELEMENT_TYPE AS kind, METADATA_JSON AS doc
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_COMPONENT_ELEMENT
-    WHERE SOURCE_SYSTEM_NAME = 'ARCHER' AND SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
-      AND SOURCE_RECORD_ID IN (SELECT content_id FROM picked)
-),
-edges AS (
-    SELECT 'CATALOG' AS model, FK_SOURCE_ELEMENT_HASH AS parent_key, FK_TARGET_ELEMENT_HASH AS child_key
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY WHERE DEPENDENCY_TYPE = 'CONTAINS'
-    UNION ALL
-    SELECT 'SECURITY_ASSESSMENT_PLAN' AS model, FK_SOURCE_ELEMENT_HASH AS parent_key, FK_TARGET_ELEMENT_HASH AS child_key
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY WHERE DEPENDENCY_TYPE = 'CONTAINS'
-    UNION ALL
-    SELECT 'ASSESSMENT_RESULTS' AS model, FK_SOURCE_ELEMENT_HASH AS parent_key, FK_TARGET_ELEMENT_HASH AS child_key
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY WHERE DEPENDENCY_TYPE = 'CONTAINS'
-    UNION ALL
-    SELECT 'COMPONENT_DEFINITION' AS model, FK_SOURCE_ELEMENT_HASH AS parent_key, FK_TARGET_ELEMENT_HASH AS child_key
-    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_COMPONENT_DEPENDENCY WHERE DEPENDENCY_TYPE = 'CONTAINS'
-),
-attached AS (
-    SELECT n.*, p.kind AS parent_type
-    FROM nodes n JOIN edges e ON e.model = n.model AND e.child_key = n.node_key
-    JOIN nodes p ON p.model = n.model AND p.content_id = n.content_id AND p.node_key = e.parent_key
-),
-direct_targets AS (
-    SELECT DISTINCT r.seq, r.content_id, n.node_key,
-           GET(AS_OBJECT(n.doc), COALESCE(l.member_name, r.payload_key)) AS target_value
-    FROM picked r JOIN layouts l ON l.selector = r.selector AND l.mode IN ('member', 'property')
-    JOIN attached n ON n.content_id = r.content_id AND n.model = l.model
-                   AND n.kind = l.node_type AND n.parent_type = l.parent_type
-    WHERE l.mode = 'member'
-       OR (n.doc:name::VARCHAR = r.payload_key AND
-           (l.namespace IS NULL OR n.doc:ns::VARCHAR = l.namespace))
-),
-standard_links AS (
-    SELECT DISTINCT r.seq, r.content_id, link.value:href::VARCHAR AS href
-    FROM picked r JOIN attached g ON g.content_id = r.content_id AND g.model = 'CATALOG'
-                             AND g.kind = 'groups' AND g.parent_type = 'catalog',
-         LATERAL FLATTEN(INPUT => g.doc:links) link
-    WHERE r.selector = 'standards' AND link.value:rel::VARCHAR = 'related'
-),
-standards AS (
-    SELECT n.content_id, n.node_key,
-           '#' || ARRAY_TO_STRING(TRANSFORM(REGEXP_SUBSTR_ALL(n.doc:id::VARCHAR, '.'), ch ->
-               IFF(REGEXP_LIKE(ch::VARCHAR, '[A-Za-z0-9_.~-]'), ch::VARCHAR,
-                   REGEXP_REPLACE(HEX_ENCODE(ch::VARCHAR), '(..)', '%\\1'))), '') AS href,
-           TO_VARIANT(OBJECT_CONSTRUCT_KEEP_NULL('ContentId', p.value:value::VARCHAR,
-                                                'Name', n.doc:title::VARCHAR)) AS target_value
-    FROM nodes n, LATERAL FLATTEN(INPUT => n.doc:props) p
-    WHERE n.model = 'CATALOG' AND n.kind = 'controls' AND p.value:name::VARCHAR = 'archer-content-id'
-),
-forward_layouts AS (
-    SELECT column1 AS source_field, column2 AS target_table, column3 AS target_level, column4 AS node_path
-    FROM VALUES
-        ('CONTROL_PROCEDURES', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_CONTROL_PROCEDURES_RAW', '39', 'component-definition.components[].control-implementations[].implemented-requirements[]'),
-        ('FINDINGS', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_FINDINGS_RAW', '62', 'assessment-results.results[].findings[]'),
-        ('FINDINGS_POLICY_LEVEL_3', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_FINDINGS_RAW', '62', 'assessment-results.results[].findings[]')
-),
-forward_ids AS (
-    SELECT DISTINCT r.seq, r.content_id, l.model, l.node_type, l.parent_type, l.member_name,
-           f.source_field, f.target_table, f.node_path,
-           IFF(IS_OBJECT(m.value), m.value:ContentId, m.value)::VARCHAR AS referenced_id
-    FROM picked r JOIN layouts l ON l.selector = r.selector AND l.mode IN ('procedures', 'findings')
-    JOIN forward_layouts f ON f.source_field = COALESCE(r.mapped_field, r.field_name),
-         LATERAL FLATTEN(INPUT => IFF(IS_ARRAY(r.mapped_source_value),
-             AS_ARRAY(r.mapped_source_value), ARRAY_CONSTRUCT_COMPACT(r.mapped_source_value))) m
-    WHERE m.value:LevelId IS NULL OR m.value:LevelId::VARCHAR = f.target_level
-),
-forward_targets AS (
-    SELECT DISTINCT f.seq, f.content_id, n.node_key,
-           TO_VARIANT(OBJECT_CONSTRUCT_KEEP_NULL('ContentId', f.referenced_id,
-               f.member_name, GET(AS_OBJECT(n.doc), f.member_name))) AS target_value
-    FROM forward_ids f JOIN attached n ON n.content_id = f.content_id AND n.model = f.model
-                   AND n.kind = f.node_type AND n.parent_type = f.parent_type
-                   AND n.node_key = MD5_BINARY(
-                       'v1_registry_path_instance|ARCHER|ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW|' ||
-                       f.content_id || '|' || f.model || '|' || f.node_path || '|' ||
-                       TO_JSON(ARRAY_CONSTRUCT(f.source_field, f.target_table, f.referenced_id)))
-    WHERE REGEXP_LIKE(f.referenced_id, '[1-9][0-9]*')
-),
-target_rows AS (
-    SELECT * FROM direct_targets
-    UNION ALL
-    SELECT DISTINCT l.seq, l.content_id, s.node_key, s.target_value
-    FROM standard_links l JOIN standards s ON s.content_id = l.content_id AND s.href = l.href
-    UNION ALL
-    SELECT * FROM forward_targets
-),
-saved AS (
-    SELECT seq, content_id, COUNT(*) AS item_count,
-           ARRAY_AGG(COALESCE(target_value, PARSE_JSON('null')))
-               WITHIN GROUP (ORDER BY node_key) AS items
-    FROM target_rows GROUP BY seq, content_id
+-- Policy Level 3 QA. Read-only Snowflake DEV.
+-- Search for the field name. Select and run one labeled block at a time.
+-- Each query lists the Policy Level 3 records for that field.
+
+-- 01  ABBREVIATION
+WITH saved AS (
+    SELECT p.SOURCE_RECORD_ID AS content_id, p.METADATA_JSON:value AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH
+     AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT g
+      ON g.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND g.ELEMENT_TYPE = 'groups'
+     AND g.SOURCE_RECORD_ID = p.SOURCE_RECORD_ID
+    WHERE p.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND p.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND p.ELEMENT_TYPE = 'props'
+      AND p.METADATA_JSON:name::VARCHAR = 'abbreviation'
+      AND p.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
 )
-SELECT r.field_name, r.content_id AS archer_content_id, r.source_value,
-       CASE WHEN s.item_count = 1 THEN GET(s.items, 0)
-            WHEN s.item_count > 1 THEN TO_VARIANT(s.items) END AS target_value
-FROM picked r LEFT JOIN saved s ON s.seq = r.seq AND s.content_id = r.content_id
-ORDER BY r.seq, r.content_id;
+SELECT r.CONTENT_ID,
+       GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ABBREVIATION') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR
+WHERE r.CONTENT_ID IS NOT NULL
+ORDER BY r.CONTENT_ID;
+
+-- 02  ACTIVATED_PLANS_POLICIES
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'activated-plans-policies'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ACTIVATED_PLANS_POLICIES') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 03  ADMIN_POLICY_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'admin-policy-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ADMIN_POLICY_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 04  APPLICABILITY
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'applicability'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'APPLICABILITY') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 05  ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONFIRMED_IN_ARCHER
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'confirmed-date'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONFIRMED_IN_ARCHER') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 06  ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONTENT_ID
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'archer-content-id'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONTENT_ID') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 07  ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_FIRST_PUBLISHED
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'published') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'metadata'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_FIRST_PUBLISHED') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 08  ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_LAST_UPDATED
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'last-modified') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'metadata'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_LAST_UPDATED') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 09  AUTHORITATIVE_SOURCES
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'authoritative-sources'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'AUTHORITATIVE_SOURCES') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 10  AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_AND_SUBSECTION_LEVELS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'authoritative-sources-policy-level-3-from-section-and-subsection-levels'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_AND_SUBSECTION_LEVELS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 11  AUTHORITATIVE_SOURCES_POLICY_LEVEL_3__FROM_SECTION_AND_SUBSECTION_LEVELS
+-- No verified saved target.
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3__FROM_SECTION_AND_SUBSECTION_LEVELS') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 12  AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_LEVEL_AND_BELOW
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'authoritative-sources-policy-level-3-from-section-level-and-below'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_LEVEL_AND_BELOW') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 13  AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_TOPIC_SECTION_AND_SUBSECTION_LEVELS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'authoritative-sources-policy-level-3-from-topic-section-and-subsection-levels'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_TOPIC_SECTION_AND_SUBSECTION_LEVELS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 14  BUSINESS_CONTINUITY_PLANS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'business-continuity-plans'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'BUSINESS_CONTINUITY_PLANS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 15  CHECKSUM_VALUE
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CHECKSUM_VALUE') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 16  COMPLIANCE_ENGAGEMENTS_SCOPE_PROCEDURES_FROM_SELECTED_POLICY_TOPICS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'compliance-engagements-scope-procedures-from-selected-policy-topics'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'COMPLIANCE_ENGAGEMENTS_SCOPE_PROCEDURES_FROM_SELECTED_POLICY_TOPICS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 17  CONTROL_PROCEDURES
+WITH raw AS (
+    SELECT r.CONTENT_ID::VARCHAR AS content_id, TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR) AS doc
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+), refs AS (
+    SELECT DISTINCT r.content_id,
+           IFF(IS_OBJECT(f.value), f.value:ContentId, f.value)::VARCHAR AS ref_id
+    FROM raw r, LATERAL FLATTEN(INPUT =>
+        IFF(IS_ARRAY(GET(r.doc, 'CONTROL_PROCEDURES')), AS_ARRAY(GET(r.doc, 'CONTROL_PROCEDURES')),
+            ARRAY_CONSTRUCT_COMPACT(GET(r.doc, 'CONTROL_PROCEDURES')))) f
+    WHERE f.value:LevelId IS NULL OR f.value:LevelId::VARCHAR = '39'
+), saved AS (
+    SELECT r.content_id, OBJECT_CONSTRUCT_KEEP_NULL('ContentId', r.ref_id,
+                      'description', GET(n.METADATA_JSON, 'description')) AS target_value
+    FROM refs r JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_COMPONENT_ELEMENT n
+      ON n.PK_DIM_OSCAL_COMPONENT_ELEMENT_HASH = MD5_BINARY(
+         'v1_registry_path_instance|ARCHER|ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW|' || r.content_id || '|COMPONENT_DEFINITION|component-definition.components[].control-implementations[].implemented-requirements[]|' ||
+         TO_JSON(ARRAY_CONSTRUCT('CONTROL_PROCEDURES', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_CONTROL_PROCEDURES_RAW', r.ref_id)))
+    WHERE REGEXP_LIKE(r.ref_id, '[1-9][0-9]*')
+      AND n.SOURCE_SYSTEM_NAME = 'ARCHER' AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.SOURCE_RECORD_ID = r.content_id AND n.ELEMENT_TYPE = 'implemented-requirements'
+)
+SELECT r.content_id, GET(r.doc, 'CONTROL_PROCEDURES') AS source_value,
+       s.target_value
+FROM raw r LEFT JOIN saved s ON s.content_id = r.content_id;
+
+-- 18  CONTROL_REQUIREMENTS_CONTROL_STANDARD_POLICY
+-- No verified saved target (deferred no populated references).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_REQUIREMENTS_CONTROL_STANDARD_POLICY') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 19  CONTROL_REQUIREMENTS_FUNCTIONAL_CORPORATE_POLICIES
+-- No verified saved target (deferred no populated references).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_REQUIREMENTS_FUNCTIONAL_CORPORATE_POLICIES') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 20  CONTROL_STANDARD_REQUIREMENTS
+WITH saved AS (
+    SELECT DISTINCT g.SOURCE_RECORD_ID AS content_id,
+           OBJECT_CONSTRUCT_KEEP_NULL('ContentId', cid.value:value::VARCHAR,
+                                      'Name', c.METADATA_JSON:title::VARCHAR) AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT g
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = g.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+      AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = g.SOURCE_RECORD_ID
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT c ON c.SOURCE_RECORD_ID = g.SOURCE_RECORD_ID
+      AND c.SOURCE_SYSTEM_NAME = g.SOURCE_SYSTEM_NAME AND c.SOURCE_TABLE_NAME = g.SOURCE_TABLE_NAME
+      AND c.ELEMENT_TYPE = 'controls',
+         LATERAL FLATTEN(INPUT => g.METADATA_JSON:links) lnk,
+         LATERAL FLATTEN(INPUT => c.METADATA_JSON:props) cid
+    WHERE g.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND g.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND g.ELEMENT_TYPE = 'groups'
+      AND lnk.value:rel::VARCHAR = 'related'
+      AND cid.value:name::VARCHAR = 'archer-content-id'
+      AND lnk.value:href::VARCHAR = '#' || ARRAY_TO_STRING(TRANSFORM(
+          REGEXP_SUBSTR_ALL(c.METADATA_JSON:id::VARCHAR, '.'), ch ->
+          IFF(REGEXP_LIKE(ch::VARCHAR, '[A-Za-z0-9_.~-]'), ch::VARCHAR,
+              REGEXP_REPLACE(HEX_ENCODE(ch::VARCHAR), '(..)', '%\\1'))), '')
+)
+SELECT r.CONTENT_ID,
+       GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_STANDARD_REQUIREMENTS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 21  CONTROL_STANDARD_TYPE_LEVEL_3
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'control-standard-type-level-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_STANDARD_TYPE_LEVEL_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 22  CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3_FIELD_VALUE_MATCH
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'control-standards-calculated-policy-level-3-field-value-match'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3_FIELD_VALUE_MATCH') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 23  CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3__FIELD_VALUE_MATCH
+-- No verified saved target.
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3__FIELD_VALUE_MATCH') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 24  CONTROL_TESTING_RESULTS_FAILED_POLICY_LEVEL_3
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'findings' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'failed-test-result'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_TESTING_RESULTS_FAILED_POLICY_LEVEL_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 25  CONTROL_TESTING_RESULTS_POLICY
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'findings' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'test-result'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'CONTROL_TESTING_RESULTS_POLICY') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 26  COUNT_OF_OBJECTIVES
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'objective-count'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'COUNT_OF_OBJECTIVES') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 27  COUNT_OF_OPEN_POAMS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'results' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'open-poam-count'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'COUNT_OF_OPEN_POAMS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 28  DEFAULT_RECORD_PERMISSIONS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'default-record-permissions'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'DEFAULT_RECORD_PERMISSIONS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 29  DCMA_CONTROL_SCORE_AVERAGE_SUM
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'results' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'dcma-control-score-average-sum'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'DCMA_CONTROL_SCORE_AVERAGE_SUM') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 30  DOCUMENT_REPOSITORY
+-- No verified saved target (awaiting mapping decision).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'DOCUMENT_REPOSITORY') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 31  EVIDENCE_REPOSITORY_POLICY_LEVEL_3
+-- No verified saved target (awaiting mapping decision).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'EVIDENCE_REPOSITORY_POLICY_LEVEL_3') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 32  EVIDENCE_REPOSITORY_RELATED_POLICY_LEVEL_3
+-- No verified saved target (awaiting mapping decision).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'EVIDENCE_REPOSITORY_RELATED_POLICY_LEVEL_3') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 33  EXECUTIVE_OWNER
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'executive-owner'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'EXECUTIVE_OWNER') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 34  EXCEPTION_REQUESTS_POLICIES
+-- No verified saved target (deferred no populated references).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'EXCEPTION_REQUESTS_POLICIES') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 35  FINDINGS
+WITH raw AS (
+    SELECT r.CONTENT_ID::VARCHAR AS content_id, TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR) AS doc
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+), refs AS (
+    SELECT DISTINCT r.content_id,
+           IFF(IS_OBJECT(f.value), f.value:ContentId, f.value)::VARCHAR AS ref_id
+    FROM raw r, LATERAL FLATTEN(INPUT =>
+        IFF(IS_ARRAY(GET(r.doc, 'FINDINGS')), AS_ARRAY(GET(r.doc, 'FINDINGS')),
+            ARRAY_CONSTRUCT_COMPACT(GET(r.doc, 'FINDINGS')))) f
+    WHERE f.value:LevelId IS NULL OR f.value:LevelId::VARCHAR = '62'
+), saved AS (
+    SELECT r.content_id, OBJECT_CONSTRUCT_KEEP_NULL('ContentId', r.ref_id,
+                      'title', GET(n.METADATA_JSON, 'title')) AS target_value
+    FROM refs r JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+      ON n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = MD5_BINARY(
+         'v1_registry_path_instance|ARCHER|ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW|' || r.content_id || '|ASSESSMENT_RESULTS|assessment-results.results[].findings[]|' ||
+         TO_JSON(ARRAY_CONSTRUCT('FINDINGS', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_FINDINGS_RAW', r.ref_id)))
+    WHERE REGEXP_LIKE(r.ref_id, '[1-9][0-9]*')
+      AND n.SOURCE_SYSTEM_NAME = 'ARCHER' AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.SOURCE_RECORD_ID = r.content_id AND n.ELEMENT_TYPE = 'findings'
+)
+SELECT r.content_id, GET(r.doc, 'FINDINGS') AS source_value,
+       s.target_value
+FROM raw r LEFT JOIN saved s ON s.content_id = r.content_id;
+
+-- 36  FINDINGS_POLICY_LEVEL_3
+WITH raw AS (
+    SELECT r.CONTENT_ID::VARCHAR AS content_id, TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR) AS doc
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+), refs AS (
+    SELECT DISTINCT r.content_id,
+           IFF(IS_OBJECT(f.value), f.value:ContentId, f.value)::VARCHAR AS ref_id
+    FROM raw r, LATERAL FLATTEN(INPUT =>
+        IFF(IS_ARRAY(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')), AS_ARRAY(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')),
+            ARRAY_CONSTRUCT_COMPACT(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')))) f
+    WHERE f.value:LevelId IS NULL OR f.value:LevelId::VARCHAR = '62'
+), saved AS (
+    SELECT r.content_id, OBJECT_CONSTRUCT_KEEP_NULL('ContentId', r.ref_id,
+                      'title', GET(n.METADATA_JSON, 'title')) AS target_value
+    FROM refs r JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+      ON n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = MD5_BINARY(
+         'v1_registry_path_instance|ARCHER|ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW|' || r.content_id || '|ASSESSMENT_RESULTS|assessment-results.results[].findings[]|' ||
+         TO_JSON(ARRAY_CONSTRUCT('FINDINGS_POLICY_LEVEL_3', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_FINDINGS_RAW', r.ref_id)))
+    WHERE REGEXP_LIKE(r.ref_id, '[1-9][0-9]*')
+      AND n.SOURCE_SYSTEM_NAME = 'ARCHER' AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.SOURCE_RECORD_ID = r.content_id AND n.ELEMENT_TYPE = 'findings'
+)
+SELECT r.content_id, GET(r.doc, 'FINDINGS_POLICY_LEVEL_3') AS source_value,
+       s.target_value
+FROM raw r LEFT JOIN saved s ON s.content_id = r.content_id;
+
+-- 37  FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS_DO_NOT_USE2
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS_DO_NOT_USE2') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 38  FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS__DO_NOT_USE2
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FINDINGS_POLICY_LEVEL_3_FROM_DEVIATIONS__DO_NOT_USE2') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 39  FINDINGS_POLICY__LEVEL_3
+-- Worksheet alias. The saved target is mapped from FINDINGS_POLICY_LEVEL_3.
+WITH raw AS (
+    SELECT r.CONTENT_ID::VARCHAR AS content_id, TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR) AS doc
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+), refs AS (
+    SELECT DISTINCT r.content_id,
+           IFF(IS_OBJECT(f.value), f.value:ContentId, f.value)::VARCHAR AS ref_id
+    FROM raw r, LATERAL FLATTEN(INPUT =>
+        IFF(IS_ARRAY(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')), AS_ARRAY(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')),
+            ARRAY_CONSTRUCT_COMPACT(GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')))) f
+    WHERE f.value:LevelId IS NULL OR f.value:LevelId::VARCHAR = '62'
+), saved AS (
+    SELECT r.content_id, OBJECT_CONSTRUCT_KEEP_NULL('ContentId', r.ref_id,
+                      'title', GET(n.METADATA_JSON, 'title')) AS target_value
+    FROM refs r JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+      ON n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = MD5_BINARY(
+         'v1_registry_path_instance|ARCHER|ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW|' || r.content_id || '|ASSESSMENT_RESULTS|assessment-results.results[].findings[]|' ||
+         TO_JSON(ARRAY_CONSTRUCT('FINDINGS_POLICY_LEVEL_3', 'RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_FINDINGS_RAW', r.ref_id)))
+    WHERE REGEXP_LIKE(r.ref_id, '[1-9][0-9]*')
+      AND n.SOURCE_SYSTEM_NAME = 'ARCHER' AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.SOURCE_RECORD_ID = r.content_id AND n.ELEMENT_TYPE = 'findings'
+)
+SELECT r.content_id, COALESCE(GET(r.doc, 'FINDINGS_POLICY__LEVEL_3'),
+                GET(r.doc, 'FINDINGS_POLICY_LEVEL_3')) AS source_value,
+       s.target_value
+FROM raw r LEFT JOIN saved s ON s.content_id = r.content_id;
+
+-- 40  FINDINGS_POLICIES_CALCULATED_LEVEL_3
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'findings-policies-calculated-level-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FINDINGS_POLICIES_CALCULATED_LEVEL_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 41  FINDINGS_POLICIES__CALCULATED_LEVEL_3
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FINDINGS_POLICIES__CALCULATED_LEVEL_3') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 42  FCP_POLICY_LEVEL_1_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'fcp-policy-level-1-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FCP_POLICY_LEVEL_1_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 43  FCP_POLICY_LEVEL_2_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'fcp-policy-level-2-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FCP_POLICY_LEVEL_2_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 44  FCP_POLICY_LEVEL_3_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'fcp-policy-level-3-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'FCP_POLICY_LEVEL_3_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 45  GLOSSARY
+-- No verified saved target (blocked target data unavailable).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'GLOSSARY') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 46  HELPER_POLICY_FEED
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'helper-policy-feed'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'HELPER_POLICY_FEED') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 47  INSERT_DATE
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'INSERT_DATE') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 48  ISSUES_POLICIES
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'findings' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'issue'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ISSUES_POLICIES') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 49  ISSUES_POLICIES1
+-- No verified saved target.
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'ISSUES_POLICIES1') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 50  LINKED_POLICY_CHANGED_DATE
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'linked-policy-changed-date'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'LINKED_POLICY_CHANGED_DATE') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 51  META_DATA
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'meta-data'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'META_DATA') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 52  NEW_AUTH_SOURCE_CALC_CROSSREF_SECTION
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'new-auth-source-calc-crossref-section'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'NEW_AUTH_SOURCE_CALC_CROSSREF_SECTION') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 53  NEW_AUTH_SOURCE_CALC_CROSSREF_SUBSECTION
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'new-auth-source-calc-crossref-subsection'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'NEW_AUTH_SOURCE_CALC_CROSSREF_SUBSECTION') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 54  POLICIES_FCP_POLICY_LEVEL_3_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policies-fcp-policy-level-3-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_FCP_POLICY_LEVEL_3_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 55  POLICIES_POLICY__LEVEL_3
+-- No verified saved target.
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY__LEVEL_3') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
+
+-- 56  POLICIES_POLICY_TO_POLICY_CROSSREF
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policies-policy-to-policy-crossref'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY_TO_POLICY_CROSSREF') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 57  POLICY_CHANGE_RECOMMENDATION_POLICIES
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-change-recommendation-policies'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_CHANGE_RECOMMENDATION_POLICIES') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 58  POLICY_HIERARCHY_1_2_3
+-- This saved property is shared by more than one mapping.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-hierarchy-1-2-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_HIERARCHY_1_2_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 59  POLICY_LEVEL_1_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-1-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_1_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 60  POLICY_LEVEL_2_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-2-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_2_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 61  POLICY_LEVEL_2_REFERENCE
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-2-reference'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_2_REFERENCE') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 62  POLICY_LEVEL_3_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'title') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'groups'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 63  POLICY_LEVEL_3_OWNER
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-owner'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_OWNER') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 64  POLICY_LEVEL_3_STATEMENT
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'prose') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'parts'
+      AND n.METADATA_JSON:name::VARCHAR = 'statement'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_STATEMENT') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 65  POLICY_LEVEL_3_TRACKING_ID
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'tracking-id'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_TRACKING_ID') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 66  POLICY_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 67  POLICY_NUMBER
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'id') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'groups'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_NUMBER') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 68  POLICY_TOPIC_NAME
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-topic-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_TOPIC_NAME') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 69  POLICY__LEVEL_1_NAME
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_1_NAME.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-1-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_1_NAME'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_1_NAME')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 70  POLICY__LEVEL_2_NAME
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_2_NAME.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-2-name'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_2_NAME'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_2_NAME')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 71  POLICY__LEVEL_2_REFERENCE
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_2_REFERENCE.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-level-2-reference'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_2_REFERENCE'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_2_REFERENCE')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 72  POLICY__LEVEL_3_NAME
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_3_NAME.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'title') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'catalog' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'groups'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_3_NAME'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_NAME')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 73  POLICY__LEVEL_3_OWNER
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_3_OWNER.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-owner'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_3_OWNER'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_OWNER')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 74  POLICY__LEVEL_3_STATEMENT
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_3_STATEMENT.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'prose') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'parts'
+      AND n.METADATA_JSON:name::VARCHAR = 'statement'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_3_STATEMENT'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_STATEMENT')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 75  POLICY__LEVEL_3_TRACKING_ID
+-- Worksheet alias. The saved target is mapped from POLICY_LEVEL_3_TRACKING_ID.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'tracking-id'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY__LEVEL_3_TRACKING_ID'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICY_LEVEL_3_TRACKING_ID')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 76  POLICIES_POLICY__LEVEL_3_POLICY_HIERARCHY_1_2_3
+-- Worksheet alias. The saved target is mapped from POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3.
+-- This saved property is shared by more than one mapping.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-hierarchy-1-2-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, COALESCE(GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY__LEVEL_3_POLICY_HIERARCHY_1_2_3'),
+                GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3')) AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 77  POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3
+-- This saved property is shared by more than one mapping.
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policy-hierarchy-1-2-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 78  POLICIES_POLICY_LEVEL_3
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'policies-policy-level-3'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'POLICIES_POLICY_LEVEL_3') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 79  PURPOSE
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'prose') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'parts'
+      AND n.METADATA_JSON:name::VARCHAR = 'overview'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'PURPOSE') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 80  QUESTION_LIBRARY
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT p
+      ON p.PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'activities' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'question-library'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'QUESTION_LIBRARY') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 81  REGULATORY_TESTING_SCOPE
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'regulatory-testing-scope'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'REGULATORY_TESTING_SCOPE') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 82  RETIRED_DATE
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'retired-date'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'RETIRED_DATE') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 83  SECTION_DATE_CREATED
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'date-created'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'SECTION_DATE_CREATED') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 84  SECTION_LAST_UPDATED
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'last-updated'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'SECTION_LAST_UPDATED') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 85  SOX_CONTROL
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'sox-control'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'SOX_CONTROL') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 86  SOX_REFERENCE_ID
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'sox-reference-id'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'SOX_REFERENCE_ID') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 87  SORT_ORDER
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'sort-order'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'SORT_ORDER') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 88  STATUS
+WITH saved AS (
+    SELECT n.SOURCE_RECORD_ID AS content_id,
+           GET(n.METADATA_JSON, 'value') AS target_value
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e
+      ON e.FK_TARGET_ELEMENT_HASH = n.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH AND e.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT p
+      ON p.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e.FK_SOURCE_ELEMENT_HASH
+     AND p.ELEMENT_TYPE = 'groups' AND p.SOURCE_RECORD_ID = n.SOURCE_RECORD_ID
+    WHERE n.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n.ELEMENT_TYPE = 'props'
+      AND n.METADATA_JSON:name::VARCHAR = 'status'
+      AND n.METADATA_JSON:ns::VARCHAR = 'urn:archer:source:v1'
+)
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'STATUS') AS source_value,
+       s.target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r
+LEFT JOIN saved s ON s.content_id = r.CONTENT_ID::VARCHAR;
+
+-- 89  UPDATE_DATE
+-- No verified saved target (excluded or inactive).
+SELECT r.CONTENT_ID, GET(TRY_PARSE_JSON(r.CURATED_JSON::VARCHAR), 'UPDATE_DATE') AS source_value,
+       NULL::VARIANT AS target_value
+FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW r;
