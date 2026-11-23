@@ -1,0 +1,21 @@
+-- Policy Level 3. EVIDENCE_REPOSITORY_POLICY_LEVEL_3. Read-only Snowflake DEV.
+-- Target unavailable in the reviewed mapping (awaiting mapping decision). TARGET_VALUE is returned as SQL NULL.
+WITH sample AS (
+    SELECT DISTINCT CONTENT_ID::VARCHAR AS content_id
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW
+    WHERE CONTENT_ID IS NOT NULL
+    -- AND CONTENT_ID::VARCHAR = 'YOUR_CONTENT_ID'
+),
+raw_row AS (
+    SELECT p.CONTENT_ID::VARCHAR AS content_id,
+           GET(AS_OBJECT(p.CURATED_JSON), 'EVIDENCE_REPOSITORY_POLICY_LEVEL_3') AS mapped_source_value,
+           GET(AS_OBJECT(p.CURATED_JSON), 'EVIDENCE_REPOSITORY_POLICY_LEVEL_3') AS exact_source_value
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW p
+    JOIN sample s ON s.content_id = p.CONTENT_ID::VARCHAR
+)
+SELECT s.content_id AS ARCHER_CONTENT_ID,
+       r.exact_source_value AS SOURCE_VALUE,
+       NULL::VARIANT AS TARGET_VALUE
+FROM sample s
+LEFT JOIN raw_row r ON r.content_id = s.content_id
+ORDER BY s.content_id;

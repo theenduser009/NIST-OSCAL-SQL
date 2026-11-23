@@ -1,0 +1,53 @@
+-- Policy Level 3. POLICY__LEVEL_3_NAME. Read-only Snowflake DEV.
+-- The worksheet binds this label to POLICY_LEVEL_3_NAME. The source uses the exact key when present.
+-- Target path is catalog.groups[].title.
+WITH sample AS (
+    SELECT DISTINCT CONTENT_ID::VARCHAR AS content_id
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW
+    WHERE CONTENT_ID IS NOT NULL
+    -- AND CONTENT_ID::VARCHAR = 'YOUR_CONTENT_ID'
+),
+raw_row AS (
+    SELECT p.CONTENT_ID::VARCHAR AS content_id,
+           GET(AS_OBJECT(p.CURATED_JSON), 'POLICY_LEVEL_3_NAME') AS mapped_source_value,
+           GET(AS_OBJECT(p.CURATED_JSON), 'POLICY__LEVEL_3_NAME') AS exact_source_value
+    FROM RTX_RAW_DEV.ES_ESC_GRC.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW p
+    JOIN sample s ON s.content_id = p.CONTENT_ID::VARCHAR
+),
+target_rows AS (
+    SELECT n0.SOURCE_RECORD_ID AS SAVED_OWNER_CONTENT_ID,
+           n1.OSCAL_UUID AS OSCAL_UUID,
+           n1.ELEMENT_TYPE AS ELEMENT_TYPE,
+           GET_PATH(n1.METADATA_JSON, 'title') AS OSCAL_VALUE,
+           n1.METADATA_JSON AS OSCAL_PAYLOAD,
+           n1.DW_LOAD_TIMESTAMP AS OSCAL_LOAD_TIMESTAMP
+    FROM RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n0
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.FACT_OSCAL_CATALOG_DEPENDENCY e1
+      ON e1.FK_SOURCE_ELEMENT_HASH = n0.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH
+     AND e1.DEPENDENCY_TYPE = 'CONTAINS'
+    JOIN RTX_ENTERPRISESERVICES_DEV.ES_ESC_GRC_CURATED.DIM_OSCAL_CATALOG_ELEMENT n1
+      ON n1.PK_DIM_OSCAL_CATALOG_ELEMENT_HASH = e1.FK_TARGET_ELEMENT_HASH
+     AND n1.ELEMENT_TYPE = 'groups'
+    WHERE n0.SOURCE_SYSTEM_NAME = 'ARCHER'
+      AND n0.SOURCE_TABLE_NAME = 'ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW'
+      AND n0.ELEMENT_TYPE = 'catalog'
+      AND n0.SOURCE_RECORD_ID::VARCHAR IN (SELECT content_id FROM sample)
+),
+target_values AS (
+    SELECT SAVED_OWNER_CONTENT_ID::VARCHAR AS content_id,
+           COUNT(*) AS value_count,
+           ARRAY_AGG(COALESCE(OSCAL_VALUE::VARIANT, PARSE_JSON('null')))
+             WITHIN GROUP (ORDER BY OSCAL_UUID) AS values_array
+    FROM target_rows
+    GROUP BY SAVED_OWNER_CONTENT_ID::VARCHAR
+)
+SELECT s.content_id AS ARCHER_CONTENT_ID,
+       COALESCE(r.exact_source_value, r.mapped_source_value) AS SOURCE_VALUE,
+       CASE WHEN t.value_count IS NULL THEN NULL
+            WHEN t.value_count = 1 THEN GET(t.values_array, 0)
+            ELSE TO_VARIANT(t.values_array)
+       END AS TARGET_VALUE
+FROM sample s
+LEFT JOIN raw_row r ON r.content_id = s.content_id
+LEFT JOIN target_values t ON t.content_id = s.content_id
+ORDER BY s.content_id;
