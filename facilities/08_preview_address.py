@@ -1,10 +1,13 @@
-# Run in the same Snowflake notebook session, after Cell 7 passes in PREVIEW.
+# Run in the same Snowflake notebook session after a successful Cell 7 preview.
 nodes = MODEL_GRAPHS[("source-three-facilities", "SSP")]["nodes"]
+address = (
+    nodes.filter(nodes["ELEMENT_TYPE"] == "address")
+    .select("SOURCE_RECORD_ID", "METADATA_JSON")
+    .first()
+)
 
-for node in nodes:
-    if node["ELEMENT_TYPE"] == "address":
-        print("Archer Content ID:", node["SOURCE_RECORD_ID"])
-        print("Mapped address:", node["METADATA_JSON"])
-        break
-else:
+if address is None:
     print("No address was produced in this preview.")
+else:
+    print("Archer Content ID:", address["SOURCE_RECORD_ID"])
+    print("Mapped address:", address["METADATA_JSON"])
