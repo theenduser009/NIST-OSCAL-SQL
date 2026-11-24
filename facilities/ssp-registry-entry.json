@@ -68,7 +68,7 @@
       "PROCESS_ORDER": 5,
       "OPERATOR": "object",
       "UUID_POLICY": "omit",
-      "REQUIRED_MEMBERS": null
+      "REQUIRED_MEMBERS": "addr-lines"
     }
   ]
 }
