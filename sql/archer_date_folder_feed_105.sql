@@ -34,3 +34,23 @@ LIST @${jv_stage_name}/${jv_stage_path}/${jv_year}/${jv_month}/${jv_day}/
 -- in its staged SELECT and the same PATTERN at COPY level, outside that SELECT.
 -- Preserve the loader's target columns, JSON projection, filename, scan time,
 -- file format and load options. LIST only verifies selection; COPY performs the load.
+
+-- 6. Snowflake worksheet only. Preview the other feeds for the known new-layout day.
+-- Run both statements back to back in the same session. This step changes no config.
+LIST @ES_ESC_GRC_RAW/ARCHER/2026/11/23/;
+
+SELECT c.CONFIG_ID, c.NAME, c.STAGE_PATH AS current_path,
+       f."name" AS staged_file,
+       IFF(f."name" IS NULL, 'NO EXACT FILE FOUND', 'FILE FOUND') AS check_result
+FROM ETL_CONFIG c
+LEFT JOIN TABLE(RESULT_SCAN(LAST_QUERY_ID())) f
+  ON ENDSWITH('/' || f."name",
+              '/ARCHER/2026/11/23/' || SPLIT_PART(RTRIM(c.STAGE_PATH, '/'), '/', -1) || '.jsonl.gz')
+WHERE UPPER(c.SOURCE_SYSTEM) = 'ARCHER'
+  AND UPPER(c.STAGE_NAME) = 'ES_ESC_GRC_RAW'
+  AND REGEXP_LIKE(RTRIM(c.STAGE_PATH, '/'), 'ARCHER/[A-Za-z0-9_]+')
+  AND c.CONFIG_ID <> 105
+ORDER BY c.CONFIG_ID;
+
+-- FILE FOUND matches the old feed-folder name to the exact filename in the new day folder.
+-- Check each feed's next watermark date before changing its path; older dates can use the old layout.
