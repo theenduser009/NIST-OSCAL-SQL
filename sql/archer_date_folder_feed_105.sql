@@ -106,3 +106,45 @@ SELECT CONFIG_ID, NAME, STAGE_PATH, FILE_PATTERN
 FROM ETL_CONFIG
 WHERE UPPER(SOURCE_SYSTEM) = 'ARCHER' AND UPPER(STAGE_NAME) = 'ES_ESC_GRC_RAW'
 ORDER BY CONFIG_ID;
+
+-- 9. If step 7 reported zero, run this entire LIST ->> SELECT as ONE read-only statement.
+-- It shows the first reason each feed is skipped, with both file checks side by side.
+LIST @ES_ESC_GRC_RAW/ARCHER/2026/
+->> WITH files AS (
+    SELECT DISTINCT SPLIT_PART('/' || "name", '/ARCHER/', -1) AS date_and_file FROM $1
+), watermarks AS (
+    SELECT UPPER(OBJECT_NAME) AS object_key, COUNT(*) AS watermark_rows,
+           IFF(COUNT(*) = 1, DATEADD(day, 1, MAX(LAST_LOADED_DATE)::DATE), NULL) AS next_load_date
+    FROM ETL_WATERMARK
+    WHERE UPPER(SOURCE_SYSTEM) = 'ARCHER'
+    GROUP BY UPPER(OBJECT_NAME)
+), feeds AS (
+    SELECT c.CONFIG_ID, c.NAME, c.OBJECT_NAME, c.STAGE_PATH,
+           SPLIT_PART(RTRIM(c.STAGE_PATH, '/'), '/', -1) AS feed_name,
+           REGEXP_LIKE(RTRIM(c.STAGE_PATH, '/'), 'ARCHER/[A-Za-z0-9_]+') AS old_path,
+           COALESCE(w.watermark_rows, 0) AS watermark_rows, w.next_load_date
+    FROM ETL_CONFIG c
+    LEFT JOIN watermarks w ON w.object_key = UPPER(c.OBJECT_NAME)
+    WHERE UPPER(c.SOURCE_SYSTEM) = 'ARCHER' AND UPPER(c.STAGE_NAME) = 'ES_ESC_GRC_RAW'
+)
+SELECT f.CONFIG_ID, f.NAME, f.STAGE_PATH, f.watermark_rows, f.next_load_date,
+       reviewed.date_and_file AS november_23_file, due.date_and_file AS next_load_file,
+       CASE
+         WHEN f.CONFIG_ID = 105 THEN 'PILOT EXCLUDED'
+         WHEN RTRIM(f.STAGE_PATH, '/') = 'ARCHER' THEN 'PATH ALREADY ARCHER'
+         WHEN NOT COALESCE(f.old_path, FALSE) THEN 'OLD PATH NOT RECOGNIZED'
+         WHEN f.watermark_rows = 0 THEN 'NO MATCHING WATERMARK'
+         WHEN f.watermark_rows > 1 THEN 'MULTIPLE MATCHING WATERMARKS'
+         WHEN f.next_load_date IS NULL THEN 'WATERMARK DATE IS EMPTY'
+         WHEN f.next_load_date < DATE '2026-11-23' THEN 'NEXT DATE BEFORE CUTOVER'
+         WHEN YEAR(f.next_load_date) <> 2026 THEN 'NEXT DATE OUTSIDE THIS STAGE LISTING'
+         WHEN COUNT_IF(f.old_path AND f.next_load_date >= DATE '2026-11-23')
+                OVER (PARTITION BY f.CONFIG_ID) > 1 THEN 'DUPLICATE ELIGIBLE CONFIG ID'
+         WHEN reviewed.date_and_file IS NULL THEN 'NOVEMBER 23 FILE NOT MATCHED'
+         WHEN due.date_and_file IS NULL THEN 'NEXT LOAD FILE NOT MATCHED'
+         ELSE 'ELIGIBLE NOW'
+       END AS reason
+FROM feeds f
+LEFT JOIN files reviewed ON reviewed.date_and_file = '2026/11/23/' || f.feed_name || '.jsonl.gz'
+LEFT JOIN files due ON due.date_and_file = TO_CHAR(f.next_load_date, 'YYYY/MM/DD') || '/' || f.feed_name || '.jsonl.gz'
+ORDER BY reason, f.CONFIG_ID;
