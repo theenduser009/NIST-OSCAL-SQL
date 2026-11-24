@@ -55,6 +55,20 @@
       "OPERATOR": "properties",
       "UUID_POLICY": "omit",
       "REQUIRED_MEMBERS": null
+    },
+    {
+      "OSCAL_MODEL_KEY": "SSP",
+      "NODE_PATH": "system-security-plan.metadata.locations[].address",
+      "PARENT_NODE_PATH": "system-security-plan.metadata.locations[]",
+      "IS_COLLECTION": false,
+      "INSTANCE_KEY_RULE": null,
+      "ITEM_PATH": null,
+      "IS_ACTIVE": true,
+      "ELEMENT_TYPE": "address",
+      "PROCESS_ORDER": 5,
+      "OPERATOR": "object",
+      "UUID_POLICY": "omit",
+      "REQUIRED_MEMBERS": null
     }
   ]
 }
