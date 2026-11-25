@@ -42,8 +42,11 @@ title_check = archer_names.join(titles_by_id, ["CONTENT_ID"], how="full").select
 print("Preview status:", PIPELINE_REPORT["status"])
 title_check.group_by("RESULT").count().sort("RESULT").show()
 
-print("Rows to review (empty if every title matched):")
-title_check.filter("RESULT <> 'MATCH'").sort("CONTENT_ID").show(10)
-
-print("Sample matching titles:")
-title_check.filter("RESULT = 'MATCH'").sort("CONTENT_ID").show(5)
+# Show the exact source field and resulting title for each Content ID.
+# Keep this DataFrame as the last expression so Snowsight opens it as a table.
+title_check.sort("CONTENT_ID").select_expr(
+    "CONTENT_ID",
+    "ARCHER_NAME AS ARCHER_ENGAGEMENT_NAME",
+    "OSCAL_TITLE AS OSCAL_ASSESSMENT_PLAN_TITLE",
+    "RESULT",
+)
