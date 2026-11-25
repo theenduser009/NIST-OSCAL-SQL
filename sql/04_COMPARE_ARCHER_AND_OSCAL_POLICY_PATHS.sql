@@ -1,11 +1,9 @@
--- Compare Archer policy memberships and one-hop related standards with the saved OSCAL paths.
--- Run the complete read-only block from the same DEV curated worksheet as Query 1.
--- Step 4. One read-only DEV statement. One row per starting Standard from Step 2.
--- Start with REVIEW_SCOPE. Compare actual Standard/Policy IDs, including the referring
--- Standard on each one-hop path. A numeric range can reproduce four candidates, not prove UCF.
--- RAW means stored Archer CURATED_JSON; SAVED means the Catalog DIM used by Step 2.
--- This compares two snapshots. A missing record, unreadable version, or unsupported reference
--- leaves the source unverified. A difference alone does not establish a mapper defect.
+-- Step 4. One row for Josh's 98 package standards with no saved Level 3 policy path.
+-- Run the complete block in the same DEV curated worksheet as Query 1.
+-- RAW_L2 counts standards with a direct Level 2 policy in Archer RAW.
+-- CHANGED_L2 counts standards where the raw and saved Level 2 policy IDs differ.
+-- RAW_L3 counts standards reaching Level 3 directly or through one referring standard.
+-- SOURCE_CHECK flags a changed population, incomplete coverage, or another Level 3 reference.
 EXECUTE IMMEDIATE $$
 DECLARE
     raw_ns VARCHAR;
@@ -241,26 +239,29 @@ BEGIN
             LEFT JOIN explicit_source_l3 h ON h.standard_id = s.standard_id
             LEFT JOIN saved_additional_edges a ON a.standard_id = s.standard_id
             WHERE s.side = 'SAVED'
+        ), counts AS (
+            SELECT COUNT(*) AS package_standards,
+                   COALESCE(COUNT_IF(is_gap), 0) AS saved_gaps,
+                   COALESCE(COUNT_IF(is_gap AND ARRAY_SIZE(raw_direct_l2) > 0), 0) AS raw_l2,
+                   COALESCE(COUNT_IF(is_gap AND NOT same_observed_l2_ids), 0) AS changed_l2,
+                   COALESCE(COUNT_IF(is_gap AND ARRAY_SIZE(raw_direct_l3) + ARRAY_SIZE(raw_via_l3) > 0), 0) AS raw_l3,
+                   COALESCE(COUNT_IF(is_gap AND source_status <> 'RAW STANDARD READABLE'), 0) AS unreadable_gaps,
+                   COALESCE(COUNT_IF(is_gap AND ARRAY_SIZE(explicit_l3_ids_on_raw_standard) > 0), 0) AS explicit_l3
+            FROM (
+                SELECT c.*, review_scope = 'JOSH ORIGINAL GAP' AS is_gap FROM compared c
+            ) scoped
         )
-        SELECT c.standard_id, c.review_scope,
-               CASE WHEN c.source_status <> 'RAW STANDARD READABLE' THEN 'SOURCE UNVERIFIED'
-                    WHEN ARRAY_SIZE(raw_only_direct_l3) + ARRAY_SIZE(saved_only_direct_l3)
-                       + ARRAY_SIZE(raw_only_via_l3) + ARRAY_SIZE(saved_only_via_l3) > 0 THEN 'LEVEL 3 PATH SETS DIFFER'
-                    WHEN ARRAY_SIZE(saved_direct_l3) + ARRAY_SIZE(saved_via_l3) > 0 THEN 'SAME OBSERVED LEVEL 3 PATHS'
-                    WHEN ARRAY_SIZE(explicit_l3_ids_on_raw_standard) > 0 THEN 'EXPLICIT RAW L3 REFERENCE ONLY'
-                    WHEN q.l3_roots_with_membership_array = 0 OR q.missing_readable_source_tables + q.unreadable_or_ambiguous_raw_records
-                       + q.unsupported_raw_reference_members + q.unresolved_owner_standard_ids > 0
-                       THEN 'NO OBSERVED PATH; RAW COVERAGE INCOMPLETE'
-                    ELSE 'NO LEVEL 3 ON THE TWO TESTED ROUTES' END AS finding,
-               c.* EXCLUDE (standard_id, review_scope),
-               COUNT(*) OVER () AS starting_standards, COUNT(*) OVER (PARTITION BY review_scope) AS scope_standards,
-               COALESCE(COUNT_IF(review_scope = 'JOSH ORIGINAL GAP' AND ARRAY_SIZE(raw_direct_l2) > 0) OVER (), 0) AS gaps_with_raw_l2,
-               COALESCE(COUNT_IF(review_scope = 'JOSH ORIGINAL GAP' AND NOT same_observed_l2_ids) OVER (), 0) AS gaps_with_different_l2_ids,
-               COALESCE(COUNT_IF(review_scope = 'JOSH ORIGINAL GAP' AND ARRAY_SIZE(raw_direct_l3) + ARRAY_SIZE(raw_via_l3) > 0) OVER (), 0) AS gaps_with_raw_l3_on_tested_routes,
-               q.*
-        FROM compared c CROSS JOIN coverage q
-        ORDER BY CASE c.review_scope WHEN 'JOSH ORIGINAL GAP' THEN 0 WHEN 'JOSH UCF RANGE CANDIDATE' THEN 1 ELSE 2 END,
-                 c.standard_id
+        SELECT raw_l2, changed_l2, raw_l3,
+               CASE WHEN package_standards <> 324 OR saved_gaps <> 98
+                        THEN 'Scope changed (' || package_standards || ' standards, ' || saved_gaps || ' gaps)'
+                    WHEN raw_l2 <> saved_gaps OR changed_l2 > 0 OR raw_l3 > 0 THEN 'Observed paths differ'
+                    ELSE 'Observed paths agree' END
+               || IFF(unreadable_gaps > 0 OR q.l3_roots_with_membership_array = 0
+                      OR q.missing_readable_source_tables + q.unreadable_or_ambiguous_raw_records
+                         + q.unsupported_raw_reference_members + q.unresolved_owner_standard_ids > 0,
+                      ' / incomplete source coverage', '')
+               || IFF(explicit_l3 > 0, ' / additional Level 3 reference to review', '') AS source_check
+        FROM counts CROSS JOIN coverage q
     );
     RETURN TABLE(rows_out);
 END;
