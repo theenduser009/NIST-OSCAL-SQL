@@ -2700,6 +2700,1367 @@
       }
     },
     {
+      "source_key": "source-three-policy-level-1",
+      "model": "CATALOG",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_CATALOG_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_CATALOG_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_CATALOG_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_CATALOG_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "inline_links": {
+        "catalog.metadata.links[]": {
+          "id_key": "Id",
+          "name_key": "Name",
+          "href_key": "Url",
+          "order_key": "SortOrder",
+          "rel": "reference",
+          "include_text": true,
+          "allowed_schemes": [
+            "http",
+            "https"
+          ]
+        }
+      },
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ACTIVATED_PLANS_POLICIES",
+            "transform": "json-value",
+            "name": "activated-plans-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_CONFIRMED_IN_ARCHER",
+            "transform": "json-value",
+            "name": "confirmed-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_CONTENT_ID",
+            "transform": "json-value",
+            "name": "archer-content-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORIZED_BY",
+            "transform": "json-value",
+            "name": "authorized-by",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "BUSINESS_CONTINUITY_PLANS",
+            "transform": "json-value",
+            "name": "business-continuity-plans",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "CONTROL_STANDARD_TYPE_LEVEL_1",
+            "transform": "json-value",
+            "name": "control-standard-type-level-1",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DEFAULT_RECORD_PERMISSIONS",
+            "transform": "json-value",
+            "name": "default-record-permissions",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DPE_POLICIES_FUNCTIONAL_CORPORATE_POLICY",
+            "transform": "json-value",
+            "name": "dpe-policies-functional-corporate-policy",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "EFFECTIVE_DATE",
+            "transform": "json-value",
+            "name": "effective-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FUNCTION",
+            "transform": "json-value",
+            "name": "function",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "PERSONS_AFFECTED",
+            "transform": "json-value",
+            "name": "persons-affected",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_CALCULATED_POLICY_LEVEL_1_FIELD_VALUE_MATCH",
+            "transform": "json-value",
+            "name": "policies-calculated-policy-level-1-field-value-match",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3",
+            "transform": "json-value",
+            "name": "policy-hierarchy-1-2-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_DATE_CREATED",
+            "transform": "json-value",
+            "name": "date-created",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LAST_UPDATED",
+            "transform": "json-value",
+            "name": "last-updated",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_1_OWNER",
+            "transform": "json-value",
+            "name": "policy-owner",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_1_TRACKING_ID",
+            "transform": "json-value",
+            "name": "tracking-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_PURPOSE_SHORT_VERSION",
+            "transform": "json-value",
+            "name": "short-purpose",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_TYPE",
+            "transform": "json-value",
+            "name": "policy-type",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_2_REFERENCE",
+            "transform": "json-text",
+            "name": "policy-level-2-reference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_3_REFERENCE",
+            "transform": "json-text",
+            "name": "policy-level-3-reference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORITATIVE_SOURCE_REFERENCES",
+            "transform": "json-text",
+            "name": "authoritative-source-references",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      },
+      "native_controls": {
+        "policy-control-standards-direct": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_STANDARDS_RAW",
+          "content_id_column": "CONTENT_ID",
+          "json_column": "CURATED_JSON",
+          "owner_bindings": {
+            "catalog": null,
+            "catalog.groups[]": null
+          },
+          "reference_owner_paths": [
+            "catalog.groups[]"
+          ],
+          "id_policy": "normalize-invalid-token-v1",
+          "target_level_id": 41
+        }
+      },
+      "lookup_groups": [
+        "catalog-controls"
+      ]
+    },
+    {
+      "source_key": "source-three-policy-level-1",
+      "model": "SECURITY_ASSESSMENT_PLAN",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-plan.local-definitions.activities[].props[]",
+            "field": "QUESTION_LIBRARY",
+            "transform": "json-value",
+            "name": "question-library",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-1",
+      "model": "ASSESSMENT_RESULTS",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_1_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "lookup_groups": [
+        "joined-records"
+      ],
+      "joined_lookups": {
+        "policy-findings": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_FINDINGS_RAW",
+          "reference_field": "FINDINGS",
+          "target_level_id": 62,
+          "instance_field": "_FORWARD_INSTANCE",
+          "origin_record_id_field": "_TARGET_CONTENT_ID",
+          "provenance_field": "_REFERENCE_LINEAGE",
+          "members": {
+            "FINDING_NAME": "FINDING_NAME"
+          },
+          "projection": "forward-raw-physical-v1",
+          "null_member_policy": "omit",
+          "blank_member_policy": "reject",
+          "allow_scalar": true,
+          "append_to_record_path": "assessment-results.results[].findings[]",
+          "missing_member_policy": "omit"
+        }
+      },
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-results.results[].findings[].props[]",
+            "field": "CONTROL_TESTING_RESULTS_POLICY_LEVEL_1",
+            "transform": "json-value",
+            "name": "test-result",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].risks[].props[]",
+            "field": "RISK_REGISTER_COPY_OF_PRIMARY_DOMAIN",
+            "transform": "json-value",
+            "name": "primary-domain",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].risks[].props[]",
+            "field": "RISK_REGISTER_ROOT_CAUSE_DOMAIN_FCP",
+            "transform": "json-value",
+            "name": "root-cause-domain",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-2",
+      "model": "CATALOG",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_CATALOG_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_CATALOG_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_CATALOG_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_CATALOG_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "native_controls": {
+        "policy-control-standards": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_STANDARDS_RAW",
+          "content_id_column": "CONTENT_ID",
+          "json_column": "CURATED_JSON",
+          "owner_bindings": {
+            "catalog": null,
+            "catalog.groups[]": null
+          },
+          "reference_owner_paths": [
+            "catalog.groups[]"
+          ],
+          "id_policy": "normalize-invalid-token-v1",
+          "target_level_id": 41
+        },
+        "policy-control-standards-direct": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_STANDARDS_RAW",
+          "content_id_column": "CONTENT_ID",
+          "json_column": "CURATED_JSON",
+          "owner_bindings": {
+            "catalog": null,
+            "catalog.groups[]": null
+          },
+          "reference_owner_paths": [
+            "catalog.groups[]"
+          ],
+          "id_policy": "normalize-invalid-token-v1",
+          "target_level_id": 41
+        }
+      },
+      "lookup_groups": [
+        "catalog-controls"
+      ],
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ABBREVIATION",
+            "transform": "json-value",
+            "name": "abbreviation",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ACTIVATED_PLANS_POLICIES",
+            "transform": "json-value",
+            "name": "activated-plans-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_CONFIRMED_IN_ARCHER",
+            "transform": "json-value",
+            "name": "confirmed-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_CONTENT_ID",
+            "transform": "json-value",
+            "name": "archer-content-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AREA_DATE_CREATED",
+            "transform": "json-value",
+            "name": "date-created",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AREA_LAST_UPDATED",
+            "transform": "json-value",
+            "name": "last-updated",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORIZED_BY",
+            "transform": "json-value",
+            "name": "authorized-by",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "BUSINESS_CONTINUITY_PLANS",
+            "transform": "json-value",
+            "name": "business-continuity-plans",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "CONTROL_STANDARD_TYPE_LEVEL_2",
+            "transform": "json-value",
+            "name": "control-standard-type-level-2",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DEFAULT_RECORD_PERMISSIONS",
+            "transform": "json-value",
+            "name": "default-record-permissions",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DPE_POLICIES_20240215FUNCTIONAL_CORPORATE_POLICY_OLD",
+            "transform": "json-value",
+            "name": "dpe-functional-corporate-policy-old",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DT_NUMBER",
+            "transform": "json-value",
+            "name": "dt-number",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "EFFECTIVE_DATE",
+            "transform": "json-value",
+            "name": "effective-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FUNCTION",
+            "transform": "json-value",
+            "name": "function",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "PERSONS_AFFECTED",
+            "transform": "json-value",
+            "name": "persons-affected",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_FCP_POLICY_LEVEL_2_NAME",
+            "transform": "json-value",
+            "name": "fcp-policy-level-2-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3",
+            "transform": "json-value",
+            "name": "policy-hierarchy-1-2-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_RELATED_INFORMATION",
+            "transform": "json-value",
+            "name": "related-information",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_1_NAME_CALC_FIELD",
+            "transform": "json-value",
+            "name": "policy-level-1-name-calc-field",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_2_OWNER",
+            "transform": "json-value",
+            "name": "policy-owner",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_2_TRACKING_ID",
+            "transform": "json-value",
+            "name": "tracking-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "PUBLISHED_DATE",
+            "transform": "json-value",
+            "name": "published-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "PURPOSE_SHORT_VERSION",
+            "transform": "json-value",
+            "name": "short-purpose",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "REFERENCES",
+            "transform": "json-value",
+            "name": "references",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "RELATED_INFORMATION",
+            "transform": "json-value",
+            "name": "related-information-source-value",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SORT_ORDER",
+            "transform": "json-value",
+            "name": "sort-order",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "STATUS",
+            "transform": "json-value",
+            "name": "status",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_1_REFERENCE",
+            "transform": "json-text",
+            "name": "policy-level-1-reference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_3_REFERENCE",
+            "transform": "json-text",
+            "name": "policy-level-3-reference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "RELATED_FUNCTIONAL_CORPORATE_POLICIES",
+            "transform": "json-text",
+            "name": "related-functional-corporate-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      },
+      "constant_values": {
+        "NATIVE_CATALOG_ID_ASSIGNMENTS": {
+          "version": "owner-target-native-id-v1",
+          "assignments": [
+            {
+              "owner_content_id": "6738919",
+              "target_content_id": "877507",
+              "oscal_id": "PS-03-01-archer-877507"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-2",
+      "model": "SECURITY_ASSESSMENT_PLAN",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-plan.local-definitions.activities[].props[]",
+            "field": "QUESTION_LIBRARY",
+            "transform": "json-value",
+            "name": "question-library",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-2",
+      "model": "ASSESSMENT_RESULTS",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_2_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "lookup_groups": [
+        "joined-records"
+      ],
+      "joined_lookups": {
+        "policy-findings": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_FINDINGS_RAW",
+          "reference_field": "FINDINGS",
+          "target_level_id": 62,
+          "instance_field": "_FORWARD_INSTANCE",
+          "origin_record_id_field": "_TARGET_CONTENT_ID",
+          "provenance_field": "_REFERENCE_LINEAGE",
+          "members": {
+            "FINDING_NAME": "FINDING_NAME"
+          },
+          "projection": "forward-raw-physical-v1",
+          "null_member_policy": "omit",
+          "blank_member_policy": "reject",
+          "allow_scalar": true,
+          "append_to_record_path": "assessment-results.results[].findings[]",
+          "missing_member_policy": "omit"
+        }
+      },
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-results.results[].props[]",
+            "field": "COUNT_OF_OPEN_POAMS",
+            "transform": "json-value",
+            "name": "open-poam-count",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-3",
+      "model": "CATALOG",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_CATALOG_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_CATALOG_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_CATALOG_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_CATALOG_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "native_controls": {
+        "policy-control-standards": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_STANDARDS_RAW",
+          "content_id_column": "CONTENT_ID",
+          "json_column": "CURATED_JSON",
+          "owner_bindings": {
+            "catalog": null,
+            "catalog.groups[]": null
+          },
+          "reference_owner_paths": [
+            "catalog.groups[]"
+          ],
+          "id_policy": "normalize-invalid-token-v1",
+          "target_level_id": 41
+        }
+      },
+      "lookup_groups": [
+        "catalog-controls"
+      ],
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ABBREVIATION",
+            "transform": "json-value",
+            "name": "abbreviation",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ACTIVATED_PLANS_POLICIES",
+            "transform": "json-value",
+            "name": "activated-plans-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ADMIN_POLICY_NAME",
+            "transform": "json-value",
+            "name": "admin-policy-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "APPLICABILITY",
+            "transform": "json-value",
+            "name": "applicability",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONFIRMED_IN_ARCHER",
+            "transform": "json-value",
+            "name": "confirmed-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_CONTENT_ID",
+            "transform": "json-value",
+            "name": "archer-content-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_AND_SUBSECTION_LEVELS",
+            "transform": "json-value",
+            "name": "authoritative-sources-policy-level-3-from-section-and-subsection-levels",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_SECTION_LEVEL_AND_BELOW",
+            "transform": "json-value",
+            "name": "authoritative-sources-policy-level-3-from-section-level-and-below",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORITATIVE_SOURCES_POLICY_LEVEL_3_FROM_TOPIC_SECTION_AND_SUBSECTION_LEVELS",
+            "transform": "json-value",
+            "name": "authoritative-sources-policy-level-3-from-topic-section-and-subsection-levels",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "BUSINESS_CONTINUITY_PLANS",
+            "transform": "json-value",
+            "name": "business-continuity-plans",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "COMPLIANCE_ENGAGEMENTS_SCOPE_PROCEDURES_FROM_SELECTED_POLICY_TOPICS",
+            "transform": "json-value",
+            "name": "compliance-engagements-scope-procedures-from-selected-policy-topics",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "CONTROL_STANDARDS_CALCULATED_POLICY_LEVEL_3_FIELD_VALUE_MATCH",
+            "transform": "json-value",
+            "name": "control-standards-calculated-policy-level-3-field-value-match",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "CONTROL_STANDARD_TYPE_LEVEL_3",
+            "transform": "json-value",
+            "name": "control-standard-type-level-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "CONTROL_TYPE",
+            "transform": "json-value",
+            "name": "control-type",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "COUNT_OF_OBJECTIVES",
+            "transform": "json-value",
+            "name": "objective-count",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DEFAULT_RECORD_PERMISSIONS",
+            "transform": "json-value",
+            "name": "default-record-permissions",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "DPE_POLICIES_CONTROL_STANDARD_POLICY",
+            "transform": "json-value",
+            "name": "dpe-policies-control-standard-policy",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "EXECUTIVE_OWNER",
+            "transform": "json-value",
+            "name": "executive-owner",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FCP_POLICY_LEVEL_1_NAME",
+            "transform": "json-value",
+            "name": "fcp-policy-level-1-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FCP_POLICY_LEVEL_2_NAME",
+            "transform": "json-value",
+            "name": "fcp-policy-level-2-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FCP_POLICY_LEVEL_3_NAME",
+            "transform": "json-value",
+            "name": "fcp-policy-level-3-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FINDINGS_POLICIES",
+            "transform": "json-value",
+            "name": "findings-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "FINDINGS_POLICIES_CALCULATED_LEVEL_3",
+            "transform": "json-value",
+            "name": "findings-policies-calculated-level-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "HELPER_POLICY_FEED",
+            "transform": "json-value",
+            "name": "helper-policy-feed",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "LINKED_POLICY_CHANGED_DATE",
+            "transform": "json-value",
+            "name": "linked-policy-changed-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "META_DATA",
+            "transform": "json-value",
+            "name": "meta-data",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "NEW_AUTH_SOURCE_CALC_CROSSREF_SECTION",
+            "transform": "json-value",
+            "name": "new-auth-source-calc-crossref-section",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "NEW_AUTH_SOURCE_CALC_CROSSREF_SUBSECTION",
+            "transform": "json-value",
+            "name": "new-auth-source-calc-crossref-subsection",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_FCP_POLICY_LEVEL_3_NAME",
+            "transform": "json-value",
+            "name": "policies-fcp-policy-level-3-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_POLICY_LEVEL_3_POLICY_HIERARCHY_1_2_3",
+            "transform": "json-value",
+            "name": "policy-hierarchy-1-2-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_HIERARCHY_1_2_3",
+            "transform": "json-value",
+            "name": "policy-hierarchy-1-2-3",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_L3_TO_POLICY_L3_CALCULATED_CROSSREFERENCE",
+            "transform": "json-value",
+            "name": "policy-l3-to-policy-l3-calculated-crossreference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_1_NAME",
+            "transform": "json-value",
+            "name": "policy-level-1-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_2_NAME",
+            "transform": "json-value",
+            "name": "policy-level-2-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_3_OWNER",
+            "transform": "json-value",
+            "name": "policy-owner",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_3_TRACKING_ID",
+            "transform": "json-value",
+            "name": "tracking-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_NAME",
+            "transform": "json-value",
+            "name": "policy-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_TOPIC_NAME",
+            "transform": "json-value",
+            "name": "policy-topic-name",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "PUBLISHED_DATE",
+            "transform": "json-value",
+            "name": "published-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "REGULATORY_TESTING_SCOPE",
+            "transform": "json-value",
+            "name": "regulatory-testing-scope",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "RETIRED_DATE",
+            "transform": "json-value",
+            "name": "retired-date",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SECTION_DATE_CREATED",
+            "transform": "json-value",
+            "name": "date-created",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SECTION_LAST_UPDATED",
+            "transform": "json-value",
+            "name": "last-updated",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SORT_ORDER",
+            "transform": "json-value",
+            "name": "sort-order",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SOX_CONTROL",
+            "transform": "json-value",
+            "name": "sox-control",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "SOX_REFERENCE_ID",
+            "transform": "json-value",
+            "name": "sox-reference-id",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "STATUS",
+            "transform": "json-value",
+            "name": "status",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_LEVEL_2_REFERENCE",
+            "transform": "json-text",
+            "name": "policy-level-2-reference",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICY_CHANGE_RECOMMENDATION_POLICIES",
+            "transform": "json-text",
+            "name": "policy-change-recommendation-policies",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "AUTHORITATIVE_SOURCES",
+            "transform": "json-text",
+            "name": "authoritative-sources",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "catalog.groups[].props[]",
+            "field": "POLICIES_POLICY_TO_POLICY_CROSSREF",
+            "transform": "json-text",
+            "name": "policies-policy-to-policy-crossref",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-3",
+      "model": "SECURITY_ASSESSMENT_PLAN",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_PLAN_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_PLAN_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-plan.local-definitions.activities[].props[]",
+            "field": "QUESTION_LIBRARY",
+            "transform": "json-value",
+            "name": "question-library",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-3",
+      "model": "ASSESSMENT_RESULTS",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_ASSESSMENT_RESULTS_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_ASSESSMENT_RESULTS_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "lookup_groups": [
+        "joined-records"
+      ],
+      "joined_lookups": {
+        "policy-findings": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_FINDINGS_RAW",
+          "reference_field": "FINDINGS",
+          "target_level_id": 62,
+          "instance_field": "_FORWARD_INSTANCE",
+          "origin_record_id_field": "_TARGET_CONTENT_ID",
+          "provenance_field": "_REFERENCE_LINEAGE",
+          "members": {
+            "FINDING_NAME": "FINDING_NAME"
+          },
+          "projection": "forward-raw-physical-v1",
+          "null_member_policy": "omit",
+          "blank_member_policy": "reject",
+          "allow_scalar": true,
+          "append_to_record_path": "assessment-results.results[].findings[]",
+          "missing_member_policy": "omit"
+        },
+        "policy-findings-level-3": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_FINDINGS_RAW",
+          "reference_field": "FINDINGS_POLICY_LEVEL_3",
+          "target_level_id": 62,
+          "instance_field": "_FORWARD_INSTANCE",
+          "origin_record_id_field": "_TARGET_CONTENT_ID",
+          "provenance_field": "_REFERENCE_LINEAGE",
+          "members": {
+            "FINDING_NAME": "FINDING_NAME"
+          },
+          "projection": "forward-raw-physical-v1",
+          "null_member_policy": "omit",
+          "blank_member_policy": "reject",
+          "allow_scalar": true,
+          "append_to_record_path": "assessment-results.results[].findings[]",
+          "missing_member_policy": "omit"
+        }
+      },
+      "property_identity": {
+        "version": "singleton-properties-v1",
+        "stable_fields": [],
+        "reconcile_fields": [
+          {
+            "path": "assessment-results.results[].findings[].props[]",
+            "field": "CONTROL_TESTING_RESULTS_FAILED_POLICY_LEVEL_3",
+            "transform": "json-value",
+            "name": "failed-test-result",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].findings[].props[]",
+            "field": "CONTROL_TESTING_RESULTS_POLICY",
+            "transform": "json-value",
+            "name": "test-result",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].findings[].props[]",
+            "field": "ISSUES_POLICIES",
+            "transform": "json-value",
+            "name": "issue",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].props[]",
+            "field": "COUNT_OF_OPEN_POAMS",
+            "transform": "json-value",
+            "name": "open-poam-count",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          },
+          {
+            "path": "assessment-results.results[].props[]",
+            "field": "DCMA_CONTROL_SCORE_AVERAGE_SUM",
+            "transform": "json-value",
+            "name": "dcma-control-score-average-sum",
+            "namespace": "urn:archer:source:v1",
+            "identity": "existing-field"
+          }
+        ],
+        "migrate_value_ids": false,
+        "reconcile_missing_values": true,
+        "source_document_contract": "complete-curated-json-v1"
+      }
+    },
+    {
+      "source_key": "source-three-policy-level-3",
+      "model": "COMPONENT_DEFINITION",
+      "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_identity": "ARCHER_CONTENT_POLICIES_POLICY_LEVEL_3_RAW",
+      "source_id_column": "CONTENT_ID",
+      "source_json_column": "CURATED_JSON",
+      "target_dim": "CURATED_DB.CURATED_SCHEMA.DIM_OSCAL_COMPONENT_ELEMENT",
+      "target_fact": "CURATED_DB.CURATED_SCHEMA.FACT_OSCAL_COMPONENT_DEPENDENCY",
+      "target_dim_key": "PK_DIM_OSCAL_COMPONENT_ELEMENT_HASH",
+      "target_fact_key": "PK_FACT_OSCAL_COMPONENT_DEPENDENCY_HASH",
+      "storage_approved": true,
+      "write_allowed": false,
+      "parse_decimal": true,
+      "null_source_as_empty": false,
+      "lookup_groups": [
+        "joined-records"
+      ],
+      "joined_lookups": {
+        "policy-procedures": {
+          "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_PROCEDURES_RAW",
+          "reference_field": "CONTROL_PROCEDURES",
+          "target_level_id": 39,
+          "instance_field": "_FORWARD_INSTANCE",
+          "origin_record_id_field": "_TARGET_CONTENT_ID",
+          "provenance_field": "_REFERENCE_LINEAGE",
+          "members": {
+            "DESCRIPTION": "DESCRIPTION"
+          },
+          "projection": "forward-raw-physical-v1",
+          "null_member_policy": "omit",
+          "blank_member_policy": "reject",
+          "allow_scalar": true
+        }
+      }
+    },
+    {
       "source_key": "source-two-control-standards",
       "model": "SECURITY_ASSESSMENT_PLAN",
       "source_table": "RAW_DB.RAW_SCHEMA.ARCHER_CONTENT_CONTROL_STANDARDS_RAW",
@@ -2713,7 +4074,8 @@
       "storage_approved": true,
       "write_allowed": false,
       "parse_decimal": true,
-      "null_source_as_empty": false
+      "null_source_as_empty": false,
+      "structure_key": "source-three-policy-level-1/SECURITY_ASSESSMENT_PLAN"
     },
     {
       "source_key": "source-two-control-standards",
